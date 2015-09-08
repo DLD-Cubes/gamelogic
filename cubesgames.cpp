@@ -1,25 +1,30 @@
-#include "cubesgames.h"
-#include <stdio.h>
+
 #include <map>
 #include <ctime>
-
+#include "cubesgames.h"
+#include <stdio.h>
 
 Rssi::Rssi()
 {
 
 }
 
-void Rssi::addItem( String sFromDevice, String sToDevice, bool bIsClose )
+Rssi::~Rssi()
 {
-	m_mDeviceToIsClose.insert( sFromDevice, bIsClose );
-	m_mDeviceToIsClose.insert( sToDevice, bIsClose );
+
+}
+
+void Rssi::addItem( std::string sFromDevice, std::string sToDevice, bool bIsClose )
+{
+	m_mDeviceToIsClose.insert( std::pair<std::string,bool> (sFromDevice, bIsClose) );
+	m_mDeviceToIsClose.insert( std::pair<std::string,bool> (sToDevice, bIsClose) );
 }
 
 
-bool Rssi::isEveryoneClose
+bool Rssi::isEveryoneClose()
 {
-	std::map<String,bool>::iterator it; 
-	for(it = map.begin(); it != map.end(); it++)
+	std::map<std::string,bool>::iterator it; 
+	for(it = m_mDeviceToIsClose.begin(); it != m_mDeviceToIsClose.end(); it++)
 	{
 		if(!it->second)
 		{
@@ -30,8 +35,12 @@ bool Rssi::isEveryoneClose
 	return true;
 }
 
-
-
+void dldCubesGame::addColor( Color mainColor, Color component1, Color component2 )
+{
+	static const Color arr[] = { component1, component2 };
+	std::vector<Color> vComponents(arr, arr + sizeof(arr) / sizeof(arr[0]) );
+	m_mColorToComponent.insert(std::pair< Color,std::vector<Color> >(mainColor, vComponents));
+}
 
 dldCubesGame::dldCubesGame()
 {
@@ -64,7 +73,7 @@ dldCubesGame::~dldCubesGame()
 }
 
 
-dldCubesGame::initGame( Color mainColor )
+bool dldCubesGame::initGame( Color mainColor )
 {
 	m_server.setLightColor( m_devices[0], mainColor.m_R,  mainColor.m_G, mainColor.m_B );
 	Color compColor = m_mColorToComponent[mainColor][0];
@@ -72,18 +81,10 @@ dldCubesGame::initGame( Color mainColor )
 	compColor = m_mColorToComponent[mainColor][1];
 	m_server.setLightColor( m_devices[2], compColor.m_R, compColor.m_G, compColor.m_B);
 	playSound();
+	return true;
 }
 
-void addColor( Color mainColor, Color component1, Color component2 )
-{
-	std::sp<std::vector<Color>> vComponents(2);
-	vComponents.insert( component1 );
-	vComponents.insert( component2 );
-	m_mColorToComponent.insert(mainColor, vComponents);
-}
-
-
-bool playGameStep( Color mainColor )
+bool dldCubesGame::playGameStep( Color mainColor )
 {
 	initGame(mainColor);
 	waitForStepCompletion();
@@ -91,7 +92,7 @@ bool playGameStep( Color mainColor )
 	waitForDistance();
 }
 
-bool playGame()
+bool dldCubesGame::playGame()
 {
 	playGameStep(COLOR_PINK);
 	playGameStep(COLOR_ORANGE);
@@ -99,12 +100,12 @@ bool playGame()
 	playGameStep(COLOR_GREEN);
 }
 
-bool playSound()
+bool dldCubesGame::playSound()
 {
 		
 }
 
-bool waitForCompletion()
+bool dldCubesGame::waitForStepCompletion()
 {
 	std::vector<Distance> vDistances = m_server.getDistances();
 	int i;
@@ -113,21 +114,22 @@ bool waitForCompletion()
 		m_rssi.addItem( vDistances[i].sFrom, vDistances[i].sTo, vDistances[i].bIsClose);
 	}
 
+	std::clock_t start = std::clock();
 
 	while(!m_rssi.isEveryoneClose())
 	{
 		//Waiting for the kids to get distant or timeout
-		duration = (std::clock() - start ) / (double) CLOCKS_PER_SECOND;
-		if(duration >= nTimeOut)
+		double duration = (std::clock() - start ) / (double) CLOCKS_PER_SEC;
+		if(duration >= nTimeout)
 		{
 			return false;
 		}		
 	}
 }
 
-bool waitForDistance()
+bool dldCubesGame::waitForDistance()
 {
-	Vector<Distance> vDistances = m_server.getDistances();
+	std::vector<Distance> vDistances = m_server.getDistances();
 	int i;
 	for(i = 0; i < vDistances.size(); i++)
 	{
@@ -140,8 +142,8 @@ bool waitForDistance()
 	while(m_rssi.isEveryoneClose())
 	{
 		//Waiting for the kids to get close or timeout
-		duration = (std::clock() - start ) / (double) CLOCKS_PER_SECOND;
-		if(duration >= nTimeOut)
+		duration = (std::clock() - start ) / (double) CLOCKS_PER_SEC;
+		if(duration >= nTimeout)
 		{
 			return false;
 		}		

@@ -4,6 +4,7 @@
 #include <map>
 #include <string>
 #include <vector>
+#include "dldCubesGamesServer.h"
 
 class Color
 {
@@ -12,8 +13,16 @@ class Color
     	int m_G;
 		int m_B;
 
-		Color( int R, int G, int B ):(m_R(R), m_G(G), m_B(B)) {};
+		Color(){}
+		Color( int R, int G, int B ):m_R(R), m_G(G), m_B(B) {}
 };
+
+bool operator<(const Color& lhs, const Color& rhs)
+{
+	return ((lhs.m_R < rhs.m_R) ||
+	        ((lhs.m_R == rhs.m_R) && (lhs.m_G < rhs.m_G)) ||
+	        ((lhs.m_R == rhs.m_R) && (lhs.m_G == rhs.m_G) && (lhs.m_B < rhs.m_B)));
+}
 
 class Rssi
 {
@@ -23,21 +32,22 @@ private:
 public:
 	Rssi();
 	~Rssi();
-	void addItem( std::string sDevice, bool bIsClose );
+	void addItem( std::string sDevice,std::string sToDevice, bool bIsClose );
 	bool isEveryoneClose();
 };
 
+typedef std::vector<Color> ColorVector;
 
 class dldCubesGame
 {
 
 private:
 
-	std::map<Color,std::vector<Color>> m_mColorToComponent;
+	std::map<Color,ColorVector> m_mColorToComponent;
 	std::vector<std::string> m_devices;
-	dldCubesGamesServer m_server;
+	dldCubesGameServer m_server;
 	Rssi m_rssi;
-	int nTimeout;
+	double nTimeout;
 
 
 	Color COLOR_PINK, COLOR_RED, COLOR_WHITE, COLOR_ORANGE, COLOR_YELLOW, COLOR_PURPLE, COLOR_BLUE,	COLOR_GREEN, COLOR_BLACK;
@@ -53,14 +63,16 @@ public:
 
 	bool playGame();	
 
-	bool playGameStep();
+	bool playGameStep( Color mainColor );
 
 	bool playSound();
 
-	bool waitForCompletion();
+	bool waitForStepCompletion();
 
 	bool waitForDistance();
-}
+
+	void addColor( Color mainColor, Color component1, Color component2 );
+};
 
 
 #endif
