@@ -1,9 +1,7 @@
-#include "cubegames.h"
+#include "cubesgames.h"
 #include <stdio.h>
-#include <std::map>
+#include <map>
 #include <ctime>
-
-
 
 
 Rssi::Rssi()

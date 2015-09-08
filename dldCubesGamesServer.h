@@ -1,20 +1,23 @@
 #ifndef CUBES_GAME_SERVER_H
 #define CUBES_GAME_SERVER_H
 
-#include std::map;
+#include <map>
+#include <string>
+#include <vector>
 
 
-Struct Distance 
+struct Distance 
 {
-	String sFrom;
-	String sTo;
+	std::string sFrom;
+	std::string sTo;
 	bool bIsClose;
-}
+};
 
 class dldCubesGameServer
 {
+
 private:
-	std::vector<string> m_vDeviceIds;
+	std::vector<std::string> m_vDeviceIds;
 
 public:
 	dldCubesGameServer()
@@ -27,9 +30,9 @@ public:
 
 	}
 
-	std::vector<String> getDevices()
+	std::vector<std::string> getDevices()
 	{
-		return m_vDeviceNames;
+		return m_vDeviceIds;
 	};
 
 	std::vector<Distance> getDistances()
@@ -38,9 +41,10 @@ public:
 	}
 
 
-	bool setLightColor( String sDeviceId int R, int G, int B )
+	bool setLightColor( std::string sDeviceId, int R, int G, int B )
 	{
 
 	}
 
-}
+};
+#endif
