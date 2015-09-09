@@ -86,7 +86,18 @@ bool dldCubesGame::initGame( Color mainColor )
 bool dldCubesGame::playGameStep( Color mainColor )
 {
 	initGame(mainColor);
-	waitForStepCompletion();
+	if (waitForStepCompletion())
+	{
+		m_server.setLightColor( m_devices[0], mainColor.m_R,  mainColor.m_G, mainColor.m_B );
+		m_server.setLightColor( m_devices[1], mainColor.m_R,  mainColor.m_G, mainColor.m_B );
+		m_server.setLightColor( m_devices[2], mainColor.m_R,  mainColor.m_G, mainColor.m_B );
+	}
+	else
+	{
+		m_server.setLightColor( m_devices[0], 0,  0, 0);
+		m_server.setLightColor( m_devices[1], 0,  0, 0);
+		m_server.setLightColor( m_devices[2], 0,  0, 0);
+	}
 	playSound();
 	waitForDistance();
 }
