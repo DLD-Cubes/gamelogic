@@ -37,7 +37,7 @@ bool Rssi::isEveryoneClose()
 
 void dldCubesGame::addColor( Color mainColor, Color component1, Color component2 )
 {
-	static const Color arr[] = { component1, component2 };
+	Color arr[] = { component1, component2 };
 	std::vector<Color> vComponents(arr, arr + sizeof(arr) / sizeof(arr[0]) );
 	m_mColorToComponent.insert(std::pair< Color,std::vector<Color> >(mainColor, vComponents));
 }
