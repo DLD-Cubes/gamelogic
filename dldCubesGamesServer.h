@@ -20,31 +20,15 @@ private:
 	std::vector<std::string> m_vDeviceIds;
 
 public:
-	dldCubesGameServer()
-	{
+	dldCubesGameServer();
 
-	}
+	~dldCubesGameServer();
 
-	~dldCubesGameServer()
-	{
+	std::vector<std::string> getDevices();
 
-	}
+	std::vector<Distance> getDistances();
 
-	std::vector<std::string> getDevices()
-	{
-		return m_vDeviceIds;
-	};
-
-	std::vector<Distance> getDistances()
-	{
-
-	}
-
-
-	bool setLightColor( std::string sDeviceId, int R, int G, int B )
-	{
-
-	}
+	bool setLightColor( std::string sDeviceId, int R, int G, int B );
 
 };
 #endif

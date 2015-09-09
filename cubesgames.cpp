@@ -149,4 +149,11 @@ bool dldCubesGame::waitForDistance()
 		}		
  	}
  	return true;
-}
+
+ }
+
+ int main()
+ 	{
+ 		dldCubesGame* game = new dldCubesGame();
+ 		game->playGame();
+ 	}
