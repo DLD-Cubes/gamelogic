@@ -16,14 +16,12 @@ Rssi::~Rssi()
 
 void Rssi::addItem( std::string sFromDevice, std::string sToDevice, bool bIsClose )
 {
-	m_mDeviceToIsClose.insert( std::pair<std::string,bool> (sFromDevice, bIsClose) );
-	m_mDeviceToIsClose.insert( std::pair<std::string,bool> (sToDevice, bIsClose) );
+	m_mDeviceToIsClose.push_back({sFromDevice, sToDevice, bIsClose});
 }
 
-
+/*
 bool Rssi::isEveryoneClose()
 {
-	std::map<std::string,bool>::iterator it; 
 	for(it = m_mDeviceToIsClose.begin(); it != m_mDeviceToIsClose.end(); it++)
 	{
 		if(!it->second)
@@ -34,6 +32,7 @@ bool Rssi::isEveryoneClose()
 
 	return true;
 }
+*/
 
 void dldCubesGame::addColor( Color mainColor, Color component1, Color component2 )
 {
@@ -105,6 +104,71 @@ bool dldCubesGame::playSound()
 		
 }
 
+
+bool dldCubesGame::waitForStepCompletion()
+{
+	std::clock_t start = std::clock();
+	bool bIsEveryoneClose;
+	do
+	{
+		//Waiting for the kids to get distant or timeout
+		std::vector<Distance> vDistances = m_server.getDistances();
+		int i; 
+		bIsEveryoneClose = true;
+		for(i = 0; i < vDistances.size(); i++)
+		{
+			//m_rssi.addItem( vDistances[i].sFrom, vDistances[i].sTo, vDistances[i].bIsClose);
+			if(!vDistances[i].bIsClose)
+			{
+				bIsEveryoneClose = false;
+				break;
+			}
+		}
+
+
+		double duration = (std::clock() - start ) / (double) CLOCKS_PER_SEC;
+		if(duration >= nTimeout)
+		{
+			return false;
+		}		
+	}
+	while(!bIsEveryoneClose);
+
+	return true;
+}
+
+bool dldCubesGame::waitForDistance()
+{
+	std::clock_t start = std::clock();
+	bool bIsEveryoneClose;
+	do
+	{
+		//Waiting for the kids to get distant or timeout
+		std::vector<Distance> vDistances = m_server.getDistances();
+		int i; 
+		bIsEveryoneClose = true;
+		for(i = 0; i < vDistances.size(); i++)
+		{
+			//m_rssi.addItem( vDistances[i].sFrom, vDistances[i].sTo, vDistances[i].bIsClose);
+			if(!vDistances[i].bIsClose)
+			{
+				bIsEveryoneClose = false;
+				break;
+			}
+		}
+
+		double duration = (std::clock() - start ) / (double) CLOCKS_PER_SEC;
+		if(duration >= nTimeout)
+		{
+			return false;
+		}		
+	}
+	while(bIsEveryoneClose);
+
+	return true;
+}
+
+/*
 bool dldCubesGame::waitForStepCompletion()
 {
 	std::vector<Distance> vDistances = m_server.getDistances();
@@ -151,6 +215,7 @@ bool dldCubesGame::waitForDistance()
  	return true;
 
  }
+*/
 
  int main()
  	{

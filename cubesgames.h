@@ -27,13 +27,14 @@ bool operator<(const Color& lhs, const Color& rhs)
 class Rssi
 {
 private:
-	std::map<std::string,bool> m_mDeviceToIsClose;
+	//std::map<std::string,bool> m_mDeviceToIsClose;
+	std::vector<Distance>  m_mDeviceToIsClose;
 
 public:
 	Rssi();
 	~Rssi();
 	void addItem( std::string sDevice,std::string sToDevice, bool bIsClose );
-	bool isEveryoneClose();
+	//bool isEveryoneClose();
 };
 
 typedef std::vector<Color> ColorVector;
